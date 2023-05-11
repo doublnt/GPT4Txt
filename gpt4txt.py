@@ -8,7 +8,8 @@ import qdrant_client
 
 def main():
     # Load stored vectorstore
-    llama = LlamaCppEmbeddings(model_path="./models/ggml-model-q4_0.bin")
+    llama = LlamaCppEmbeddings(
+        model_path="./models/ggml-model-q4_0.bin")
 
     client = qdrant_client.QdrantClient(
         path="./db",
@@ -23,11 +24,11 @@ def main():
 
     retriever = qdrant.as_retriever()
     # Prepare the LLM
+    local_path = './models/ggml-gpt4all-j-v1.3-groovy.bin'
     callbacks = [StreamingStdOutCallbackHandler()]
-    llm = GPT4All(model='./models/ggml-gpt4all-j-v1.3-groovy.bin',
-                  backend='gptj',
-                  callbacks=callbacks,
-                  verbose=False)
+    llm = GPT4All(model=local_path, backend='gptj',
+                  callbacks=callbacks, verbose=True)
+
     qa = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="stuff",
