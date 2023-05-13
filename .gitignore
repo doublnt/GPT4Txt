@@ -1,4 +1,7 @@
+# folder
 db/
 models/
+output/
 
+# file
 .vscode/settings.json
