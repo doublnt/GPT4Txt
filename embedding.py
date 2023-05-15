@@ -13,7 +13,7 @@ def main():
     texts = text_splitter.split_documents(documents)
 
     # Create embeddings
-    llama = LlamaCppEmbeddings(model_path="./models/ggml-model-q4_0.bin")
+    llama = LlamaCppEmbeddings(model_path="../models/ggml-model-q8_0.bin")
 
     qdrant = Qdrant.from_documents(texts,
                                    llama,
