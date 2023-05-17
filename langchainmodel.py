@@ -134,6 +134,7 @@ def agent():
     )
     agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True)
     agent_executor.run("How many people live in canada as of 2023?")
+    agent_executor.run("how about in mexico?")
 
 def main():
     # llm_chain()
