@@ -4,7 +4,7 @@ from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.tools import DuckDuckGoSearchRun
 from langchain.prompts import StringPromptTemplate
-from langchain.agents import Tool, LLMSingleActionAgent, AgentOutputParser,AgentExecutor
+from langchain.agents import Tool, LLMSingleActionAgent, AgentOutputParser, AgentExecutor
 from langchain.schema import AgentAction, AgentFinish
 
 from typing import List, Union
@@ -63,7 +63,7 @@ def create_llm():
     local_path = "..\\models\\ggml-model-q8_0.bin"
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     llm = LlamaCpp(
-        model_path=local_path, callback_manager=callback_manager, verbose=True, n_ctx=4096
+        model_path=local_path, callback_manager=callback_manager, verbose=True, n_ctx=8192
     )
 
     return llm
@@ -132,9 +132,25 @@ def agent():
         stop=["\nObservation:"],
         allowed_tools=tool_names
     )
-    agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=tools, verbose=True)
-    agent_executor.run("How many people live in canada as of 2023?")
-    agent_executor.run("how about in mexico?")
+    agent_executor = AgentExecutor.from_agent_and_tools(
+        agent=agent, tools=tools, verbose=True)
+
+    try:
+        agent_executor.run("How many people live in canada as of 2023?")
+        agent_executor.run("how about in mexico?")
+    except ValueError as e:
+        response = str(e)
+        if "Could not parse LLM output: `" not in response:
+            raise e
+
+        match = re.search(r"`(.*?)`", response)
+
+        if match:
+            last_output = match.group(1)
+            print("Last output:", last_output)
+        else:
+            print("No match found")
+
 
 def main():
     # llm_chain()
